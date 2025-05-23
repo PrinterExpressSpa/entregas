@@ -128,10 +128,25 @@ def datos_cliente(pedido_id):
     if not pedido:
         return jsonify({"error": "Pedido no encontrado"}), 404
 
+    # Buscar nombre de la comuna
+    comuna_nombre = "-"
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT nombre FROM comunas WHERE id = %s", (pedido["comuna"],))
+        result = cursor.fetchone()
+        if result:
+            comuna_nombre = result[0]
+        conn.close()
+    except:
+        pass
+    if not pedido:
+        return jsonify({"error": "Pedido no encontrado"}), 404
+
     return jsonify({
         "nombre": pedido["nombre"],
         "direccion": pedido["direccion"],
-        "comuna": pedido["comuna"]
+        "comuna": comuna_nombre
     })
 
 if __name__ == "__main__":
