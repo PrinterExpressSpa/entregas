@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
@@ -5,6 +6,7 @@ from email.message import EmailMessage
 from datetime import datetime
 import os
 from dotenv import load_dotenv
+from PIL import Image
 
 load_dotenv()
 
@@ -13,6 +15,7 @@ UPLOAD_FOLDER = 'static/uploads'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'printerexpress_key'
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # Límite de 4MB para archivos
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
@@ -79,7 +82,19 @@ def index():
 
         filename = f"entrega_{pedido_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
+        os.makedirs(os.path.dirname(image_path), exist_ok=True)
+
+        # Guardar temporalmente la imagen original
         file.save(image_path)
+
+        # Comprimir la imagen
+        try:
+            img = Image.open(image_path)
+            img.thumbnail((1024, 1024))  # Reducción a 1024px máx
+            img.save(image_path, format='JPEG', quality=60, dpi=(72, 72), optimize=True)
+        except Exception as e:
+            flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
+            return redirect(request.url)
 
         pedido = obtener_datos_pedido(pedido_id)
         if not pedido:
