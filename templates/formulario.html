@@ -2,62 +2,69 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Entrega de Pedido | PrinterExpress</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Entrega de Pedidos | PrinterExpress</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
-      padding: 1rem;
+      font-family: Arial, sans-serif;
+      margin: 1rem;
+      background: #f4f4f4;
     }
-    header { text-align: center; margin-bottom: 1rem; }
-    header img { width: 160px; max-width: 60%; }
-    h2 { text-align: center; color: #111; }
+    header img {
+      width: 180px;
+      margin: 0 auto;
+      display: block;
+    }
+    h2 {
+      text-align: center;
+      color: #222;
+    }
     form {
+      background: white;
+      padding: 1rem;
       max-width: 480px;
       margin: auto;
-      background: white;
-      padding: 1.2rem;
-      border-radius: 12px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+      border-radius: 10px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-    label { display: block; margin-top: 1rem; font-weight: bold; }
-    input[type="text"], input[type="file"] {
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, button {
       width: 100%;
-      padding: 0.5rem;
-      font-size: 1rem;
+      padding: 0.6rem;
       margin-top: 0.3rem;
+      font-size: 1rem;
+      border-radius: 5px;
       border: 1px solid #ccc;
-      border-radius: 6px;
     }
     button {
-      margin-top: 1rem;
-      width: 100%;
-      padding: 0.75rem;
-      font-size: 1rem;
-      background: #004aad;
+      background-color: #004aad;
       color: white;
       border: none;
-      border-radius: 6px;
-      cursor: pointer;
+      margin-top: 1.2rem;
     }
-    button:hover { background: #003580; }
-    #qr-reader { width: 100%; margin-top: 1rem; }
-    .cliente-info {
-      background: #f1f1f1;
-      padding: 0.75rem;
-      border-radius: 6px;
+    .info-cliente {
+      background: #eef;
+      padding: 0.6rem;
+      border-radius: 5px;
       margin-top: 1rem;
     }
-    .cliente-info p { margin: 0.3rem 0; }
-    .footer { text-align: center; margin-top: 2rem; font-size: 0.8rem; color: #777; }
+    .info-cliente p {
+      margin: 0.2rem 0;
+    }
+    #qr-reader {
+      margin-top: 1rem;
+    }
   </style>
 </head>
 <body>
   <header>
-    <img src="/static/uploads/logo_printerexpress.jpg" alt="PrinterExpress Logo">
+    <img src="/static/uploads/logo_printerexpress.jpg" alt="Logo PrinterExpress" />
   </header>
 
   <h2>Registro de Entrega</h2>
@@ -71,47 +78,44 @@
   {% endwith %}
 
   <form method="post" enctype="multipart/form-data">
-    <label for="pedido_id">ID del Pedido</label>
-    <input type="text" name="pedido_id" id="pedido_id" required onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarCliente(this.value); }">
+    <label for="pedido_id">Número de Pedido</label>
+    <input type="text" name="pedido_id" id="pedido_id" required
+           onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarCliente(this.value); }"/>
 
-    <button type="button" onclick="iniciarQR()">📷 Escanear QR</button>
-    <div id="qr-reader" style="display: none;"></div>
+    <button type="button" onclick="iniciarQR()">Escanear Código QR</button>
+    <div id="qr-reader" style="width:100%; display:none;"></div>
 
-    <div class="cliente-info">
+    <div class="info-cliente">
       <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
       <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
       <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
     </div>
 
-    <label for="entregado_por">Quién entregó</label>
-    <input type="text" name="entregado_por" required>
+    <label for="entregado_por">Entregado por</label>
+    <input type="text" name="entregado_por" required />
 
     <label for="comentario">Comentario</label>
-    <input type="text" name="comentario">
+    <input type="text" name="comentario" />
 
-    <label for="imagen">Imagen de entrega</label>
-    <input type="file" name="imagen" accept="image/*" capture="environment" required>
+    <label for="imagen">Foto de la entrega</label>
+    <input type="file" name="imagen" accept="image/*" capture="environment" required />
 
     <button type="submit">Enviar Entrega</button>
   </form>
 
-  <div class="footer">
-    PrinterExpress &copy; 2025
-  </div>
-
   <script>
     function buscarCliente(id) {
       fetch(`/datos_cliente/${id}`)
-        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(response => response.json())
         .then(data => {
-          document.getElementById('cliente_nombre').innerText = data.nombre;
-          document.getElementById('cliente_direccion').innerText = data.direccion;
-          document.getElementById('cliente_comuna').innerText = data.comuna;
+          document.getElementById("cliente_nombre").innerText = data.nombre || "-";
+          document.getElementById("cliente_direccion").innerText = data.direccion || "-";
+          document.getElementById("cliente_comuna").innerText = data.comuna || "-";
         })
         .catch(() => {
-          document.getElementById('cliente_nombre').innerText = "-";
-          document.getElementById('cliente_direccion').innerText = "-";
-          document.getElementById('cliente_comuna').innerText = "-";
+          document.getElementById("cliente_nombre").innerText = "-";
+          document.getElementById("cliente_direccion").innerText = "-";
+          document.getElementById("cliente_comuna").innerText = "-";
         });
     }
 
@@ -119,18 +123,19 @@
       const qrDiv = document.getElementById("qr-reader");
       qrDiv.innerHTML = "";
       qrDiv.style.display = "block";
-      const qrReader = new Html5Qrcode("qr-reader");
-      qrReader.start(
+
+      const qrScanner = new Html5Qrcode("qr-reader");
+      qrScanner.start(
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
         (decodedText) => {
           document.getElementById("pedido_id").value = decodedText;
           buscarCliente(decodedText);
-          qrReader.stop().then(() => qrDiv.style.display = "none");
+          qrScanner.stop().then(() => qrDiv.style.display = "none");
         },
-        (errorMessage) => {}
+        (errorMessage) => { }
       ).catch(err => {
-        alert("⚠️ No se pudo iniciar la cámara: " + err);
+        alert("No se pudo acceder a la cámara: " + err);
       });
     }
   </script>
