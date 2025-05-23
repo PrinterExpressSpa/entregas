@@ -34,7 +34,7 @@
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, select, button {
+    input, button {
       width: 100%;
       padding: 0.6rem;
       margin-top: 0.3rem;
@@ -89,13 +89,8 @@
       <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
       <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
       <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
+      <p><strong>Tipo de entrega:</strong> <span id="tipo_entrega">-</span></p>
     </div>
-
-    <label for="tipo_entrega">Tipo de Entrega</label>
-    <select name="tipo_entrega" id="tipo_entrega">
-      <option value="Normal">Normal</option>
-      <option value="Express">Express</option>
-    </select>
 
     <label for="comentario">Observación / Comentario</label>
     <input type="text" name="comentario" id="comentario" />
@@ -117,11 +112,20 @@
           document.getElementById("cliente_nombre").innerText = data.nombre || "-";
           document.getElementById("cliente_direccion").innerText = data.direccion || "-";
           document.getElementById("cliente_comuna").innerText = data.comuna || "-";
+
+          let tipo = "Sin entrega";
+          if (data.despacho == 1 && data.despacho_express == 1) {
+            tipo = "Express";
+          } else if (data.despacho == 1) {
+            tipo = "Normal";
+          }
+          document.getElementById("tipo_entrega").innerText = tipo;
         })
         .catch(() => {
           document.getElementById("cliente_nombre").innerText = "-";
           document.getElementById("cliente_direccion").innerText = "-";
           document.getElementById("cliente_comuna").innerText = "-";
+          document.getElementById("tipo_entrega").innerText = "-";
         });
     }
 
