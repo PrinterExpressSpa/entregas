@@ -2,182 +2,137 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrega de Pedido | PrinterExpress</title>
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
-    <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            padding: 1rem;
-            background: #f9f9f9;
-            color: #333;
-        }
-
-        header {
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        header img {
-            width: 160px;
-            max-width: 60%;
-        }
-
-        h2 {
-            text-align: center;
-            color: #111;
-        }
-
-        form {
-            max-width: 480px;
-            margin: 0 auto;
-            background: white;
-            padding: 1.2rem;
-            border-radius: 12px;
-            box-shadow: 0 0 12px rgba(0,0,0,0.05);
-        }
-
-        label {
-            display: block;
-            margin-top: 1rem;
-            font-weight: bold;
-        }
-
-        input[type="text"],
-        input[type="file"] {
-            width: 100%;
-            padding: 0.5rem;
-            font-size: 1rem;
-            margin-top: 0.3rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-        }
-
-        button {
-            margin-top: 1rem;
-            width: 100%;
-            padding: 0.75rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 6px;
-            background: #004aad;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background: #003580;
-        }
-
-        #qr-reader {
-            width: 100%;
-            margin-top: 1rem;
-        }
-
-        .cliente-info {
-            background: #f1f1f1;
-            padding: 0.75rem;
-            border-radius: 6px;
-            margin-top: 1rem;
-        }
-
-        .cliente-info p {
-            margin: 0.3rem 0;
-        }
-
-        .footer {
-            margin-top: 2rem;
-            text-align: center;
-            font-size: 0.8rem;
-            color: #777;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Entrega de Pedido | PrinterExpress</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 1rem;
+    }
+    header { text-align: center; margin-bottom: 1rem; }
+    header img { width: 160px; max-width: 60%; }
+    h2 { text-align: center; color: #111; }
+    form {
+      max-width: 480px;
+      margin: auto;
+      background: white;
+      padding: 1.2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.05);
+    }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input[type="text"], input[type="file"] {
+      width: 100%;
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin-top: 0.3rem;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+    button {
+      margin-top: 1rem;
+      width: 100%;
+      padding: 0.75rem;
+      font-size: 1rem;
+      background: #004aad;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { background: #003580; }
+    #qr-reader { width: 100%; margin-top: 1rem; }
+    .cliente-info {
+      background: #f1f1f1;
+      padding: 0.75rem;
+      border-radius: 6px;
+      margin-top: 1rem;
+    }
+    .cliente-info p { margin: 0.3rem 0; }
+    .footer { text-align: center; margin-top: 2rem; font-size: 0.8rem; color: #777; }
+  </style>
 </head>
 <body>
-    <header>
-        <img src="/static/uploads/logo_printerexpress.jpg" alt="PrinterExpress Logo">
-    </header>
+  <header>
+    <img src="/static/uploads/logo_printerexpress.jpg" alt="PrinterExpress Logo">
+  </header>
 
-    <h2>Registro de Entrega</h2>
+  <h2>Registro de Entrega</h2>
 
-    {% with messages = get_flashed_messages(with_categories=true) %}
-      {% for category, message in messages %}
-        <div style="color: {% if category == 'error' %}red{% elif category == 'success' %}green{% endif %}; text-align:center;">
-          {{ message }}
-        </div>
-      {% endfor %}
-    {% endwith %}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div style="color: {% if category == 'error' %}red{% elif category == 'success' %}green{% endif %}; text-align:center;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
 
-    <form method="post" enctype="multipart/form-data">
-        <label for="pedido_id">ID del Pedido</label>
-        <input type="text" name="pedido_id" id="pedido_id" required onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarCliente(this.value); }">
+  <form method="post" enctype="multipart/form-data">
+    <label for="pedido_id">ID del Pedido</label>
+    <input type="text" name="pedido_id" id="pedido_id" required onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarCliente(this.value); }">
 
-        <button type="button" onclick="iniciarQR()">📷 Escanear QR</button>
-        <div id="qr-reader" style="display: none;"></div>
+    <button type="button" onclick="iniciarQR()">📷 Escanear QR</button>
+    <div id="qr-reader" style="display: none;"></div>
 
-        <div class="cliente-info">
-            <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
-            <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
-            <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
-        </div>
-
-        <label for="entregado_por">Quién entregó</label>
-        <input type="text" name="entregado_por" required>
-
-        <label for="comentario">Comentario</label>
-        <input type="text" name="comentario">
-
-        <label for="imagen">Imagen de entrega</label>
-        <input type="file" name="imagen" accept="image/*" required>
-
-        <button type="submit">Enviar Entrega</button>
-    </form>
-
-    <div class="footer">
-        PrinterExpress &copy; 2025
+    <div class="cliente-info">
+      <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
+      <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
+      <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
     </div>
 
-    <script>
+    <label for="entregado_por">Quién entregó</label>
+    <input type="text" name="entregado_por" required>
+
+    <label for="comentario">Comentario</label>
+    <input type="text" name="comentario">
+
+    <label for="imagen">Imagen de entrega</label>
+    <input type="file" name="imagen" accept="image/*" capture="environment" required>
+
+    <button type="submit">Enviar Entrega</button>
+  </form>
+
+  <div class="footer">
+    PrinterExpress &copy; 2025
+  </div>
+
+  <script>
     function buscarCliente(id) {
-        fetch(`/datos_cliente/${id}`)
-            .then(res => {
-                if (!res.ok) throw new Error("Pedido no encontrado");
-                return res.json();
-            })
-            .then(data => {
-                document.getElementById('cliente_nombre').innerText = data.nombre;
-                document.getElementById('cliente_direccion').innerText = data.direccion;
-                document.getElementById('cliente_comuna').innerText = data.comuna;
-            })
-            .catch(() => {
-                document.getElementById('cliente_nombre').innerText = "-";
-                document.getElementById('cliente_direccion').innerText = "-";
-                document.getElementById('cliente_comuna').innerText = "-";
-            });
+      fetch(`/datos_cliente/${id}`)
+        .then(res => res.ok ? res.json() : Promise.reject())
+        .then(data => {
+          document.getElementById('cliente_nombre').innerText = data.nombre;
+          document.getElementById('cliente_direccion').innerText = data.direccion;
+          document.getElementById('cliente_comuna').innerText = data.comuna;
+        })
+        .catch(() => {
+          document.getElementById('cliente_nombre').innerText = "-";
+          document.getElementById('cliente_direccion').innerText = "-";
+          document.getElementById('cliente_comuna').innerText = "-";
+        });
     }
 
     function iniciarQR() {
-        const qrDiv = document.getElementById("qr-reader");
-        qrDiv.innerHTML = "";
-        qrDiv.style.display = "block";
-        const qrReader = new Html5Qrcode("qr-reader");
-
-        qrReader.start(
-            { facingMode: "environment" },
-            { fps: 10, qrbox: 250 },
-            (decodedText) => {
-                document.getElementById("pedido_id").value = decodedText;
-                buscarCliente(decodedText);
-                qrReader.stop().then(() => qrDiv.style.display = "none");
-            },
-            (errorMessage) => {}
-        ).catch(err => {
-            alert("⚠️ No se pudo iniciar la cámara: " + err);
-        });
+      const qrDiv = document.getElementById("qr-reader");
+      qrDiv.innerHTML = "";
+      qrDiv.style.display = "block";
+      const qrReader = new Html5Qrcode("qr-reader");
+      qrReader.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          document.getElementById("pedido_id").value = decodedText;
+          buscarCliente(decodedText);
+          qrReader.stop().then(() => qrDiv.style.display = "none");
+        },
+        (errorMessage) => {}
+      ).catch(err => {
+        alert("⚠️ No se pudo iniciar la cámara: " + err);
+      });
     }
-    </script>
+  </script>
 </body>
 </html>
