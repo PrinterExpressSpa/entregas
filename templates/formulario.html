@@ -7,59 +7,26 @@
   <title>Entrega de Pedidos | PrinterExpress</title>
   <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 1rem;
-      background: #f4f4f4;
-    }
-    header img {
-      width: 180px;
-      margin: 0 auto;
-      display: block;
-    }
-    h2 {
-      text-align: center;
-      color: #222;
-    }
+    body { font-family: Arial, sans-serif; margin: 1rem; background: #f4f4f4; }
+    header img { width: 180px; margin: 0 auto; display: block; }
+    h2 { text-align: center; color: #222; }
     form {
-      background: white;
-      padding: 1rem;
-      max-width: 480px;
-      margin: auto;
-      border-radius: 10px;
-      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      background: white; padding: 1rem; max-width: 480px; margin: auto;
+      border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.1);
     }
-    label {
-      display: block;
-      margin-top: 1rem;
-      font-weight: bold;
-    }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
     input, button {
-      width: 100%;
-      padding: 0.6rem;
-      margin-top: 0.3rem;
-      font-size: 1rem;
-      border-radius: 5px;
-      border: 1px solid #ccc;
+      width: 100%; padding: 0.6rem; margin-top: 0.3rem; font-size: 1rem;
+      border-radius: 5px; border: 1px solid #ccc;
     }
     button {
-      background-color: #004aad;
-      color: white;
-      border: none;
-      margin-top: 1.2rem;
+      background-color: #004aad; color: white; border: none; margin-top: 1.2rem;
     }
     .info-cliente {
-      background: #eef;
-      padding: 0.6rem;
-      border-radius: 5px;
-      margin-top: 1rem;
+      background: #eef; padding: 0.6rem; border-radius: 5px; margin-top: 1rem;
     }
-    .info-cliente p {
-      margin: 0.2rem 0;
-    }
-    #qr-reader {
-      margin-top: 1rem;
-    }
+    .info-cliente p { margin: 0.2rem 0; }
+    #qr-reader { margin-top: 1rem; }
   </style>
 </head>
 <body>
@@ -129,11 +96,12 @@
         { facingMode: "environment" },
         { fps: 10, qrbox: 250 },
         (decodedText) => {
-          document.getElementById("pedido_id").value = decodedText;
-          buscarCliente(decodedText);
+          const limpio = decodedText.length > 2 ? decodedText.substring(2) : decodedText;
+          document.getElementById("pedido_id").value = limpio;
+          buscarCliente(limpio);
           qrScanner.stop().then(() => qrDiv.style.display = "none");
         },
-        (errorMessage) => { }
+        (errorMessage) => {}
       ).catch(err => {
         alert("No se pudo acceder a la cámara: " + err);
       });
