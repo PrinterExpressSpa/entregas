@@ -1,4 +1,0 @@
-flask
-gunicorn
-python-dotenv
-mysql-connector-python
