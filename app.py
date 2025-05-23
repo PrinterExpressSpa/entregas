@@ -100,15 +100,17 @@ def index():
 
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
+        fecha_entrega = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         cuerpo = (
-            f"Hola {pedido['nombre']},\n\n"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito.\n\n"
-            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.\n\n"
-            f"Gracias por preferirnos.\n\n"
-            f"Un saludo afectuoso,\n"
-            f"Equipo de Repartos\n"
-            f"PrinterExpress Spa"
-        )
+             f"Hola {pedido['nombre']},\n\n"
+             f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.\n\n"
+             f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.\n\n"
+             f"Gracias por preferirnos.\n\n"
+             f"Un saludo afectuoso,\n"
+             f"Equipo de Repartos\n"
+             f"PrinterExpress Spa"
+            )
+
 
         try:
             enviar_correo(correo, asunto, cuerpo, image_path)
@@ -128,25 +130,10 @@ def datos_cliente(pedido_id):
     if not pedido:
         return jsonify({"error": "Pedido no encontrado"}), 404
 
-    # Buscar nombre de la comuna
-    comuna_nombre = "-"
-    try:
-        conn = mysql.connector.connect(**DB_CONFIG)
-        cursor = conn.cursor()
-        cursor.execute("SELECT nombre FROM comunas WHERE id = %s", (pedido["comuna"],))
-        result = cursor.fetchone()
-        if result:
-            comuna_nombre = result[0]
-        conn.close()
-    except:
-        pass
-    if not pedido:
-        return jsonify({"error": "Pedido no encontrado"}), 404
-
     return jsonify({
         "nombre": pedido["nombre"],
         "direccion": pedido["direccion"],
-        "comuna": comuna_nombre
+        "comuna": pedido["comuna"]
     })
 
 if __name__ == "__main__":
