@@ -72,7 +72,7 @@ def registrar_entrega(pedido_id, archivo_foto, entregado_por, comentario="", ema
 def index():
     if request.method == "POST":
         pedido_id = request.form.get("pedido_id")
-        entregado_por = request.form.get("entregado_por")
+        entregado_por = request.form.get("entregado_por") or "PrinterExpress"
         comentario = request.form.get("comentario")
         file = request.files["imagen"]
 
