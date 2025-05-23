@@ -1,0 +1,91 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Entrega de Pedido</title>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        #qr-reader {
+            width: 100%;
+            max-width: 400px;
+            margin: 10px auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Registro de Entrega de Pedido</h2>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for category, message in messages %}
+        <div style="color: {% if category == 'error' %}red{% elif category == 'success' %}green{% endif %};">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endwith %}
+    <form method="post" enctype="multipart/form-data">
+        <label>ID del Pedido:</label><br>
+        <input type="text" name="pedido_id" id="pedido_id" required><br>
+        <button type="button" onclick="iniciarQR()">📷 Escanear QR</button><br><br>
+
+        <div id="qr-reader" style="display: none;"></div>
+
+        <hr>
+        <h4>Datos del Cliente:</h4>
+        <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
+        <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
+        <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
+        <hr>
+
+        <label>Quién entregó:</label><br>
+        <input type="text" name="entregado_por" required><br><br>
+        <label>Comentario (opcional):</label><br>
+        <input type="text" name="comentario"><br><br>
+        <label>Imagen de entrega:</label><br>
+        <input type="file" name="imagen" accept="image/*" required><br><br>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <script>
+    function buscarCliente(id) {
+        fetch(`/datos_cliente/${id}`)
+            .then(res => {
+                if (!res.ok) throw new Error("Pedido no encontrado");
+                return res.json();
+            })
+            .then(data => {
+                document.getElementById('cliente_nombre').innerText = data.nombre;
+                document.getElementById('cliente_direccion').innerText = data.direccion;
+                document.getElementById('cliente_comuna').innerText = data.comuna;
+            })
+            .catch(err => {
+                document.getElementById('cliente_nombre').innerText = "-";
+                document.getElementById('cliente_direccion').innerText = "-";
+                document.getElementById('cliente_comuna').innerText = "-";
+            });
+    }
+
+    document.getElementById('pedido_id').addEventListener('blur', function () {
+        if (this.value) buscarCliente(this.value);
+    });
+
+    function iniciarQR() {
+        const qrDiv = document.getElementById("qr-reader");
+        qrDiv.innerHTML = "";
+        qrDiv.style.display = "block";
+        const qrReader = new Html5Qrcode("qr-reader");
+        qrReader.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: 250 },
+            (decodedText) => {
+                document.getElementById("pedido_id").value = decodedText;
+                buscarCliente(decodedText);
+                qrReader.stop().then(() => qrDiv.style.display = "none");
+            },
+            (errorMessage) => {}
+        ).catch(err => {
+            alert("⚠️ No se pudo iniciar la cámara: " + err);
+        });
+    }
+    </script>
+</body>
+</html>
