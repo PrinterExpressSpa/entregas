@@ -89,7 +89,7 @@
       <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
       <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
       <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
-      <p><strong>Tipo de entrega:</strong> <span id="tipo_entrega">-</span></p>
+      
     </div>
 
     <label for="comentario">Observación / Comentario</label>
@@ -113,13 +113,13 @@
           document.getElementById("cliente_direccion").innerText = data.direccion || "-";
           document.getElementById("cliente_comuna").innerText = data.comuna || "-";
 
-          let tipo = "Sin entrega";
+          let 
           if (data.despacho == 1 && data.despacho_express == 1) {
             tipo = "Express";
           } else if (data.despacho == 1) {
             tipo = "Normal";
           }
-          document.getElementById("tipo_entrega").innerText = tipo;
+          
         })
         .catch(() => {
           document.getElementById("cliente_nombre").innerText = "-";
