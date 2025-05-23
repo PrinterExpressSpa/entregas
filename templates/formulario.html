@@ -89,14 +89,13 @@
       <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
       <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
       <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
-      
     </div>
 
     <label for="comentario">Observación / Comentario</label>
     <input type="text" name="comentario" id="comentario" />
 
     <label for="entregado_por">Entregado por</label>
-    <input type="text" name="entregado_por" required />
+    <input type="text" name="entregado_por" placeholder="PrinterExpress (por defecto)" />
 
     <label for="imagen">Foto de la entrega</label>
     <input type="file" name="imagen" accept="image/*" capture="environment" required />
@@ -112,20 +111,11 @@
           document.getElementById("cliente_nombre").innerText = data.nombre || "-";
           document.getElementById("cliente_direccion").innerText = data.direccion || "-";
           document.getElementById("cliente_comuna").innerText = data.comuna || "-";
-
-          let 
-          if (data.despacho == 1 && data.despacho_express == 1) {
-            tipo = "Express";
-          } else if (data.despacho == 1) {
-            tipo = "Normal";
-          }
-          
         })
         .catch(() => {
           document.getElementById("cliente_nombre").innerText = "-";
           document.getElementById("cliente_direccion").innerText = "-";
           document.getElementById("cliente_comuna").innerText = "-";
-          document.getElementById("tipo_entrega").innerText = "-";
         });
     }
 
