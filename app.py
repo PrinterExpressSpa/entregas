@@ -15,7 +15,7 @@ UPLOAD_FOLDER = 'static/uploads'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'printerexpress_key'
-app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # Límite de 4MB para archivos
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # Límite de 4MB
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
@@ -84,13 +84,10 @@ def index():
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
 
-        # Guardar temporalmente la imagen original
         file.save(image_path)
-
-        # Comprimir la imagen
         try:
             img = Image.open(image_path)
-            img.thumbnail((1024, 1024))  # Reducción a 1024px máx
+            img.thumbnail((1024, 1024))
             img.save(image_path, format='JPEG', quality=60, dpi=(72, 72), optimize=True)
         except Exception as e:
             flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
@@ -101,10 +98,26 @@ def index():
             flash("Pedido no encontrado.", "error")
             return redirect(request.url)
 
-        correo, asunto, cuerpo = (
-            pedido["email"],
-            f"Pedido {pedido_id} Entregado",
-            f"Hola {pedido['nombre']},\n\nTu pedido #{pedido_id} fue entregado. Adjuntamos imagen.\n\nGracias por elegir PrinterExpress."
+        correo = pedido["email"]
+        asunto = f"Pedido {pedido_id} Entregado"
+        cuerpo = (
+            f"Hola {pedido['nombre']},
+
+"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito.
+
+"
+            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.
+
+"
+            f"Gracias por preferirnos.
+
+"
+            f"Un saludo afectuoso,
+"
+            f"Equipo de Repartos
+"
+            f"PrinterExpress Spa"
         )
 
         try:
