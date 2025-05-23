@@ -84,12 +84,7 @@
           document.getElementById("cliente_direccion").innerText = "-";
           document.getElementById("cliente_comuna").innerText = "-";
         });
-      pedido = obtener_datos_pedido(pedido_id)
-      if not pedido:
-        flash("Pedido no encontrado.", "error")
-      return redirect(request.url)
     }
-
     function iniciarQR() {
       const qrDiv = document.getElementById("qr-reader");
       qrDiv.innerHTML = "";
