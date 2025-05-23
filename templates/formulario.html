@@ -34,7 +34,7 @@
       margin-top: 1rem;
       font-weight: bold;
     }
-    input, button {
+    input, select, button {
       width: 100%;
       padding: 0.6rem;
       margin-top: 0.3rem;
@@ -91,11 +91,17 @@
       <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
     </div>
 
+    <label for="tipo_entrega">Tipo de Entrega</label>
+    <select name="tipo_entrega" id="tipo_entrega">
+      <option value="Normal">Normal</option>
+      <option value="Express">Express</option>
+    </select>
+
+    <label for="comentario">Observación / Comentario</label>
+    <input type="text" name="comentario" id="comentario" />
+
     <label for="entregado_por">Entregado por</label>
     <input type="text" name="entregado_por" required />
-
-    <label for="comentario">Comentario</label>
-    <input type="text" name="comentario" />
 
     <label for="imagen">Foto de la entrega</label>
     <input type="file" name="imagen" accept="image/*" capture="environment" required />
