@@ -1,4 +1,3 @@
-
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
@@ -74,9 +73,13 @@ def index():
         pedido_id = request.form.get("pedido_id")
         entregado_por = request.form.get("entregado_por") or "PrinterExpress"
         comentario = request.form.get("comentario")
+
+        if "imagen" not in request.files or request.files["imagen"].filename == "":
+            flash("Debe adjuntar una imagen de la entrega.", "error")
+            return redirect(request.url)
         file = request.files["imagen"]
 
-        if not pedido_id or not entregado_por or not file:
+        if not pedido_id or not entregado_por:
             flash("Todos los campos son obligatorios.", "error")
             return redirect(request.url)
 
