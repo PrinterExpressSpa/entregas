@@ -101,23 +101,13 @@ def index():
         fecha_entrega = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
-        cuerpo = (
+       cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
-
-"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.
-
-"
-            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.
-
-"
-            f"Gracias por preferirnos.
-
-"
-            f"Un saludo afectuoso,
-"
-            f"Equipo de Repartos
-"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.\n\n"
+            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.\n\n"
+            f"Gracias por preferirnos.\n\n"
+            f"Un saludo afectuoso,\n"
+            f"Equipo de Repartos\n"
             f"PrinterExpress Spa"
         )
 
