@@ -1,0 +1,128 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Entrega de Pedidos | PrinterExpress</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 1rem; background: #f4f4f4; }
+    header img { width: 180px; margin: 0 auto; display: block; }
+    h2 { text-align: center; color: #222; }
+    form {
+      background: white; padding: 1rem; max-width: 480px; margin: auto;
+      border-radius: 10px; box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    }
+    label { display: block; margin-top: 1rem; font-weight: bold; }
+    input, button {
+      width: 100%; padding: 0.6rem; margin-top: 0.3rem; font-size: 1rem;
+      border-radius: 5px; border: 1px solid #ccc;
+    }
+    button {
+      background-color: #004aad; color: white; border: none; margin-top: 1.2rem;
+    }
+    .info-cliente {
+      background: #eef; padding: 0.6rem; border-radius: 5px; margin-top: 1rem;
+    }
+    .info-cliente p { margin: 0.2rem 0; }
+    #qr-reader { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="/static/uploads/logo_printerexpress.jpg" alt="Logo PrinterExpress" />
+  </header>
+
+  <h2>Registro de Entrega</h2>
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div style="color: {% if category == 'error' %}red{% elif category == 'success' %}green{% endif %}; text-align:center;">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endwith %}
+
+  <form method="post" enctype="multipart/form-data">
+    <label for="pedido_id">Número de Pedido</label>
+    <input type="text" name="pedido_id" id="pedido_id" required
+           onkeypress="if(event.key === 'Enter'){ event.preventDefault(); buscarCliente(this.value); }"/>
+
+    <button type="button" onclick="iniciarQR()">Escanear Código QR</button>
+    <div id="qr-reader" style="width:100%; display:none;"></div>
+
+    <div class="info-cliente">
+      <p><strong>Nombre:</strong> <span id="cliente_nombre">-</span></p>
+      <p><strong>Dirección:</strong> <span id="cliente_direccion">-</span></p>
+      <p><strong>Comuna:</strong> <span id="cliente_comuna">-</span></p>
+    </div>
+
+    <label for="comentario">Observación / Comentario</label>
+    <input type="text" name="comentario" id="comentario" />
+
+    <label for="entregado_por">Entregado por</label>
+    <input type="text" name="entregado_por" placeholder="PrinterExpress (por defecto)" />
+
+    <label for="imagen">Foto de la entrega</label>
+    <input type="file" name="imagen" accept="image/*" required />
+
+    <button type="submit">Enviar Entrega</button>
+  </form>
+
+  <script>
+    function buscarCliente(id) {
+  fetch(`/datos_cliente/${id}`)
+    .then(response => {
+      if (!response.ok) throw new Error("Pedido no encontrado");
+      return response.json();
+    })
+    .then(data => {
+      document.getElementById("cliente_nombre").innerText = data.nombre || "-";
+      document.getElementById("cliente_direccion").innerText = data.direccion || "-";
+      document.getElementById("cliente_comuna").innerText = data.comuna || "-";
+    })
+    .catch(() => {
+      document.getElementById("cliente_nombre").innerText = "Pedido no encontrado";
+      document.getElementById("cliente_direccion").innerText = "-";
+      document.getElementById("cliente_comuna").innerText = "-";
+    });
+}
+
+      fetch(`/datos_cliente/${id}`)
+        .then(response => response.json())
+        .then(data => {
+          document.getElementById("cliente_nombre").innerText = data.nombre || "-";
+          document.getElementById("cliente_direccion").innerText = data.direccion || "-";
+          document.getElementById("cliente_comuna").innerText = data.comuna || "-";
+        })
+        .catch(() => {
+          document.getElementById("cliente_nombre").innerText = "-";
+          document.getElementById("cliente_direccion").innerText = "-";
+          document.getElementById("cliente_comuna").innerText = "-";
+        });
+    }
+
+    function iniciarQR() {
+      const qrDiv = document.getElementById("qr-reader");
+      qrDiv.innerHTML = "";
+      qrDiv.style.display = "block";
+
+      const qrScanner = new Html5Qrcode("qr-reader");
+      qrScanner.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: 250 },
+        (decodedText) => {
+          const limpio = decodedText.length > 2 ? decodedText.substring(2) : decodedText;
+          document.getElementById("pedido_id").value = limpio;
+          buscarCliente(limpio);
+          qrScanner.stop().then(() => qrDiv.style.display = "none");
+        },
+        (errorMessage) => {}
+      ).catch(err => {
+        alert("No se pudo acceder a la cámara: " + err);
+      });
+    }
+  </script>
+</body>
+</html>
