@@ -102,7 +102,7 @@ def index():
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
-            f"Hola {pedido['nombre']},
+            f"Hola {pedido['nombre']},\n\n"
 
 "
             f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.
