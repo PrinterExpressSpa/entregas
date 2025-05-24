@@ -72,7 +72,7 @@ def index():
     if request.method == "POST":
         pedido_id = request.form.get("pedido_id")
         entregado_por = request.form.get("entregado_por") or "PrinterExpress"
-        comentario = request.form.get("comentario")
+        comentario = request.form.get("comentario") or "Entregado"
 
         if "imagen" not in request.files or request.files["imagen"].filename == "":
             flash("Debe adjuntar una imagen de la entrega.", "error")
@@ -88,6 +88,9 @@ def index():
             flash(f"❌ El pedido #{pedido_id} no existe en la base de datos.", "error")
             return redirect(request.url)
 
+        # Justo antes de guardar la imagen:
+        momento_foto = datetime.now()
+        
         filename = f"entrega_{pedido_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
@@ -106,8 +109,8 @@ def index():
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.\n\n"
-            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.\n\n"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {momento_foto}.\n\n"
+            f"Adjuntamos una imagen como respaldo de la entrega.\n\n"
             f"Gracias por preferirnos.\n\n"
             f"Un saludo afectuoso,\n"
             f"Equipo de Repartos\n"
