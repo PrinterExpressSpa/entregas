@@ -15,7 +15,7 @@ UPLOAD_FOLDER = 'static/uploads'
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.secret_key = 'printerexpress_key'
-app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024  # Límite de 4MB
+app.config['MAX_CONTENT_LENGTH'] = 4 * 1024 * 1024
 
 DB_CONFIG = {
     "host": os.getenv("DB_HOST"),
@@ -60,10 +60,10 @@ def registrar_entrega(pedido_id, archivo_foto, entregado_por, comentario="", ema
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
     query = '''
-        INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
-        VALUES (%s, %s, %s, %s, %s, %s)
+        INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio, fecha_hora)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)
     '''
-    valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
+    valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio, datetime.now())
     cursor.execute(query, valores)
     conn.commit()
     conn.close()
@@ -80,11 +80,16 @@ def index():
             flash("Todos los campos son obligatorios.", "error")
             return redirect(request.url)
 
+        pedido = obtener_datos_pedido(pedido_id)
+        if not pedido:
+            flash(f"❌ El pedido #{pedido_id} no existe en la base de datos.", "error")
+            return redirect(request.url)
+
         filename = f"entrega_{pedido_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
-
         file.save(image_path)
+
         try:
             img = Image.open(image_path)
             img.thumbnail((1024, 1024))
@@ -93,24 +98,28 @@ def index():
             flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
             return redirect(request.url)
 
-        pedido = obtener_datos_pedido(pedido_id)
-        if not pedido:
-            flash("Pedido no encontrado.", "error")
-            return redirect(request.url)
-
+        fecha_entrega = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
-        fecha_entrega = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
         cuerpo = (
-             f"Hola {pedido['nombre']},\n\n"
-             f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.\n\n"
-             f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.\n\n"
-             f"Gracias por preferirnos.\n\n"
-             f"Un saludo afectuoso,\n"
-             f"Equipo de Repartos\n"
-             f"PrinterExpress Spa"
-            )
+            f"Hola {pedido['nombre']},
 
+"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.
+
+"
+            f"Adjuntamos una imagen como respaldo de la entrega, tomada en el momento de recepción.
+
+"
+            f"Gracias por preferirnos.
+
+"
+            f"Un saludo afectuoso,
+"
+            f"Equipo de Repartos
+"
+            f"PrinterExpress Spa"
+        )
 
         try:
             enviar_correo(correo, asunto, cuerpo, image_path)
@@ -130,10 +139,22 @@ def datos_cliente(pedido_id):
     if not pedido:
         return jsonify({"error": "Pedido no encontrado"}), 404
 
+    comuna_nombre = "-"
+    try:
+        conn = mysql.connector.connect(**DB_CONFIG)
+        cursor = conn.cursor()
+        cursor.execute("SELECT nombre FROM comunas WHERE id = %s", (pedido["comuna"],))
+        result = cursor.fetchone()
+        if result:
+            comuna_nombre = result[0]
+        conn.close()
+    except:
+        pass
+
     return jsonify({
         "nombre": pedido["nombre"],
         "direccion": pedido["direccion"],
-        "comuna": pedido["comuna"]
+        "comuna": comuna_nombre
     })
 
 if __name__ == "__main__":
