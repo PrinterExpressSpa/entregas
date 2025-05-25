@@ -60,15 +60,11 @@ def registrar_entrega(pedido_id, archivo_foto, entregado_por, comentario="", ema
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
     query = '''
-    #    INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio, fecha_hora)
-    #    VALUES (%s, %s, %s, %s, %s, %s, %s)
-    query = '''
     INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     VALUES (%s, %s, %s, %s, %s, %s)
     '''
     valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     '''
-   # valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio, datetime.now())
     cursor.execute(query, valores)
     conn.commit()
     conn.close()
