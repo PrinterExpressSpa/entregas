@@ -64,7 +64,7 @@ def registrar_entrega(pedido_id, fecha_entrega, archivo_foto, entregado_por, com
         INSERT INTO entregas (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
         VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    valores = (pedido_id, momento_foto, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
+    valores = (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     cursor.execute(query, valores)
     conn.commit()
     conn.close()
