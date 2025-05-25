@@ -2,8 +2,9 @@ services:
   - type: web
     name: entregas-printerexpress
     env: python
+    plan: free
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
     envVars:
       - key: MAX_REQUEST_SIZE
-        value: 10MB
+        value: 15MB
