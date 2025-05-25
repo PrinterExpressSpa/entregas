@@ -63,9 +63,7 @@ def registrar_entrega(pedido_id, fecha_entrega, archivo_foto, entregado_por, com
     INSERT INTO entregas (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
-    """
-    valores = (pedido_id, foto_momento, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
-    """
+    valores = (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     cursor.execute(query, valores)
     conn.commit()
     conn.close()
@@ -124,14 +122,12 @@ def index():
 
         try:
             enviar_correo(correo, asunto, cuerpo, image_path)
-            registrar_entrega(pedido_id, image_path, entregado_por, comentario, 1, "")
+            registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 1, "")
             flash("✅ Correo enviado y entrega registrada correctamente.", "success")
         except Exception as e:
-            registrar_entrega(pedido_id, image_path, entregado_por, comentario, 0, str(e))
+            registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 0, str(e))
             flash(f"⚠️ Error al enviar el correo, pero entrega registrada. Detalle: {e}", "error")
-
         return redirect(url_for("index"))
-
     return render_template("formulario.html")
 
 @app.route("/datos_cliente/<int:pedido_id>")
