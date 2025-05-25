@@ -59,12 +59,13 @@ def enviar_correo(destinatario, asunto, cuerpo, imagen_path):
 def registrar_entrega(pedido_id, archivo_foto, entregado_por, comentario="", email_enviado=1, error_envio=""):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
-    query = '''
+    query = """
     INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     VALUES (%s, %s, %s, %s, %s, %s)
-    '''
+    """
+    """
     valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
-    '''
+    """
     cursor.execute(query, valores)
     conn.commit()
     conn.close()
