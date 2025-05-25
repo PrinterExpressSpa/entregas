@@ -63,13 +63,23 @@
     <label for="entregado_por">Entregado por</label>
     <input type="text" name="entregado_por" placeholder="PrinterExpress (por defecto)" />
 
-    <label>Foto de la entrega</label>
-    <div style="display: flex; gap: 10px;">
-        <button type="button" onclick="abrirCamara()" style="flex:1;">📸 Cámara</button>
-        <button type="button" onclick="abrirGaleria()" style="flex:1;">📂 Galería</button>
+    <label for="imagen">Foto de la entrega</label>
+    <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
+      <label style="flex:1; text-align:center; background:#004aad; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
+      📷 Cámara
+      <input type="file" name="imagen" id="imagen" accept="image/*" capture="environment" style="display:none;" required />
+      </label>
+      <label style="flex:1; text-align:center; background:#777; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
+      🖼 Galería
+      <input type="file" name="imagen" id="imagen_galeria" accept="image/*" style="display:none;" />
+      </label>
     </div>
-<input type="file" id="imagen" name="imagen" accept="image/*" style="display:none;" required />
 
+<p id="archivo_nombre" style="font-size: 0.9rem; color: #666; margin-top: -0.5rem;"></p>
+
+
+
+    
 
     <button type="submit">Enviar Entrega</button>
   </form>
