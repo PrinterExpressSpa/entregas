@@ -7,7 +7,6 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from PIL import Image
-from pytz import timezone
 from datetime import datetime, timedelta, timezone
 chile_tz = timezone(timedelta(hours=-4))  # Para horario de invierno Chile continental
 load_dotenv()
