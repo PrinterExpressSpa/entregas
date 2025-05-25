@@ -1,3 +1,4 @@
+
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
@@ -59,10 +60,10 @@ def enviar_correo(destinatario, asunto, cuerpo, imagen_path):
 def registrar_entrega(pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario="", email_enviado=1, error_envio=""):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
-    query = """
+    query = '''
     INSERT INTO entregas (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     VALUES (%s, %s, %s, %s, %s, %s, %s)
-    """
+    '''
     valores = (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     cursor.execute(query, valores)
     conn.commit()
@@ -89,11 +90,11 @@ def index():
             flash(f"❌ El pedido #{pedido_id} no existe en la base de datos.", "error")
             return redirect(request.url)
 
-        # Justo antes de guardar la imagen:
         tz = timezone('America/Santiago')
         momento_foto = datetime.now(tz)
-        
-        filename = f"entrega_{pedido_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
+        fecha_entrega = momento_foto.strftime('%d/%m/%Y %H:%M:%S')
+
+        filename = f"entrega_{pedido_id}_{momento_foto.strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
         file.save(image_path)
@@ -105,14 +106,12 @@ def index():
         except Exception as e:
             flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
             return redirect(request.url)
-            
-        fecha_entrega = datetime.now(tz).strftime('%d/%m/%Y %H:%M:%S')
-        foto_momento = datetime.now(tz).strftime('%d/%m/%Y %H:%M:%S')
+
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {foto_momento}.\n\n"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {fecha_entrega}.\n\n"
             f"Adjuntamos una imagen como respaldo de la entrega.\n\n"
             f"Gracias por preferirnos.\n\n"
             f"Un saludo afectuoso,\n"
@@ -127,7 +126,9 @@ def index():
         except Exception as e:
             registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 0, str(e))
             flash(f"⚠️ Error al enviar el correo, pero entrega registrada. Detalle: {e}", "error")
+
         return redirect(url_for("index"))
+
     return render_template("formulario.html")
 
 @app.route("/datos_cliente/<int:pedido_id>")
