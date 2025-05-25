@@ -2,6 +2,7 @@ services:
   - type: web
     name: entregas-printerexpress
     env: python
+    plan : Starter
     buildCommand: "pip install -r requirements.txt"
     startCommand: "gunicorn app:app"
     envVars:
