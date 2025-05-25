@@ -63,8 +63,13 @@
     <label for="entregado_por">Entregado por</label>
     <input type="text" name="entregado_por" placeholder="PrinterExpress (por defecto)" />
 
-    <label for="imagen">Foto de la entrega</label>
-    <input type="file" name="imagen" accept="image/*" required />
+    <label>Foto de la entrega</label>
+    <div style="display: flex; gap: 10px;">
+        <button type="button" onclick="abrirCamara()" style="flex:1;">📸 Cámara</button>
+        <button type="button" onclick="abrirGaleria()" style="flex:1;">📂 Galería</button>
+    </div>
+<input type="file" id="imagen" name="imagen" accept="image/*" style="display:none;" required />
+
 
     <button type="submit">Enviar Entrega</button>
   </form>
@@ -111,3 +116,19 @@
   </script>
 </body>
 </html>
+
+<script>
+  function abrirCamara() {
+    const input = document.getElementById("imagen");
+    input.removeAttribute("capture"); // limpia por si acaso
+    input.setAttribute("capture", "environment");
+    input.click();
+  }
+
+  function abrirGaleria() {
+    const input = document.getElementById("imagen");
+    input.removeAttribute("capture");
+    input.click();
+  }
+</script>
+
