@@ -56,15 +56,15 @@ def enviar_correo(destinatario, asunto, cuerpo, imagen_path):
     server.send_message(msg)
     server.quit()
 
-def registrar_entrega(pedido_id, archivo_foto, entregado_por, comentario="", email_enviado=1, error_envio=""):
+def registrar_entrega(pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario="", email_enviado=1, error_envio=""):
     conn = mysql.connector.connect(**DB_CONFIG)
     cursor = conn.cursor()
     query = """
-    INSERT INTO entregas (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
-    VALUES (%s, %s, %s, %s, %s, %s)
+    INSERT INTO entregas (pedido_id, fecha_entrega, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
+    VALUES (%s, %s, %s, %s, %s, %s, %s)
     """
     """
-    valores = (pedido_id, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
+    valores = (pedido_id, foto_momento, archivo_foto, entregado_por, comentario, email_enviado, error_envio)
     """
     cursor.execute(query, valores)
     conn.commit()
@@ -109,12 +109,12 @@ def index():
             return redirect(request.url)
             
         fecha_entrega = datetime.now(tz).strftime('%d/%m/%Y %H:%M:%S')
-      
+        foto_momento = datetime.now(tz).strftime('%d/%m/%Y %H:%M:%S')
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {momento_foto}.\n\n"
+            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {foto_momento}.\n\n"
             f"Adjuntamos una imagen como respaldo de la entrega.\n\n"
             f"Gracias por preferirnos.\n\n"
             f"Un saludo afectuoso,\n"
