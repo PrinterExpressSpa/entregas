@@ -7,8 +7,8 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from PIL import Image
-from pytz import timezone
-
+from datetime import datetime, timedelta, timezone
+chile_tz = timezone(timedelta(hours=-4))  # Para horario de invierno Chile continental
 load_dotenv()
 
 UPLOAD_FOLDER = 'static/uploads'
@@ -90,8 +90,7 @@ def index():
             flash(f"❌ El pedido #{pedido_id} no existe en la base de datos.", "error")
             return redirect(request.url)
 
-        tz = timezone('America/Santiago')
-        momento_foto = datetime.now(tz)
+        momento_foto = datetime.now(chile_tz)
         fecha_entrega = momento_foto.strftime('%d/%m/%Y %H:%M:%S')
 
         filename = f"entrega_{pedido_id}_{momento_foto.strftime('%Y%m%d%H%M%S')}.jpg"
