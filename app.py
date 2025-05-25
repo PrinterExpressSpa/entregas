@@ -69,7 +69,6 @@ def registrar_entrega(pedido_id, fecha_entrega, archivo_foto, entregado_por, com
     conn.commit()
     conn.close()
 
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
