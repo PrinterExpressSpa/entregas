@@ -77,10 +77,7 @@
 
 <p id="archivo_nombre" style="font-size: 0.9rem; color: #666; margin-top: -0.5rem;"></p>
 
-
-
-    
-
+  
     <button type="submit">Enviar Entrega</button>
   </form>
 
@@ -128,17 +125,18 @@
 </html>
 
 <script>
-  function abrirCamara() {
-    const input = document.getElementById("imagen");
-    input.removeAttribute("capture"); // limpia por si acaso
-    input.setAttribute("capture", "environment");
-    input.click();
-  }
+  const archivoInput = document.getElementById("imagen");
+  const galeriaInput = document.getElementById("imagen_galeria");
+  const detalle = document.getElementById("archivo_nombre");
 
-  function abrirGaleria() {
-    const input = document.getElementById("imagen");
-    input.removeAttribute("capture");
-    input.click();
-  }
-</script>
+  archivoInput.addEventListener("change", () => {
+    if (archivoInput.files.length > 0) {
+      detalle.innerText = "Imagen seleccionada: " + archivoInput.files[0].name;
+    }
+  });
 
+  galeriaInput.addEventListener("change", () => {
+    if (galeriaInput.files.length > 0) {
+      detalle.innerText = "Imagen seleccionada: " + galeriaInput.files[0].name;
+    }
+  });
