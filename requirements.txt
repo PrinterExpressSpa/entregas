@@ -3,4 +3,3 @@ gunicorn
 python-dotenv
 mysql-connector-python
 Pillow
-pytz
