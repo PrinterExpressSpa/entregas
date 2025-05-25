@@ -6,6 +6,7 @@ from datetime import datetime
 import os
 from dotenv import load_dotenv
 from PIL import Image
+from pytz import timezone
 
 load_dotenv()
 
@@ -89,7 +90,8 @@ def index():
             return redirect(request.url)
 
         # Justo antes de guardar la imagen:
-        momento_foto = datetime.now()
+        tz = timezone('America/Santiago')
+        momento_foto = datetime.now(tz)
         
         filename = f"entrega_{pedido_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.jpg"
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
@@ -103,8 +105,9 @@ def index():
         except Exception as e:
             flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
             return redirect(request.url)
-
-        fecha_entrega = datetime.now().strftime('%d-%m-%Y %H:%M:%S')
+            
+        fecha_entrega = datetime.now(tz).strftime('%d/%m/%Y %H:%M:%S')
+      
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
