@@ -101,7 +101,8 @@ def index():
         try:
             img = Image.open(image_path)
             img.thumbnail((1024, 1024))
-            img.save(image_path, format='JPEG', quality=60, dpi=(72, 72), optimize=True)
+            img.save(image_path, format='JPEG', quality=50, dpi=(72, 72), optimize=True)
+
         except Exception as e:
             flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
             return redirect(request.url)
