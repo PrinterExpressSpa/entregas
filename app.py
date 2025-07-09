@@ -76,10 +76,10 @@ def index():
         entregado_por = request.form.get("entregado_por") or "PrinterExpress"
         comentario = request.form.get("comentario") or "Entregado"
 
-        if "imagen" not in request.files or request.files["imagen"].filename == "":
-            flash("Debe adjuntar una imagen de la entrega.", "error")
-            return redirect(request.url)
-        file = request.files["imagen"]
+        file = request.files.get("imagen") or request.files.get("imagen_galeria")
+        if not file or file.filename == "":
+        flash("Debe adjuntar una imagen de la entrega.", "error")
+        return redirect(request.url)
 
         if not pedido_id or not entregado_por:
             flash("Todos los campos son obligatorios.", "error")
