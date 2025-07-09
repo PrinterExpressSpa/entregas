@@ -71,13 +71,12 @@
       </label>
       <label style="flex:1; text-align:center; background:#777; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
       🖼 Galería
-      <input type="file" name="imagen" id="imagen_galeria" accept="image/*" style="display:none;" />
+      <input type="file" name="imagen_galeria" id="imagen_galeria" accept="image/*" style="display:none;" />
       </label>
     </div>
 
-<p id="archivo_nombre" style="font-size: 0.9rem; color: #666; margin-top: -0.5rem;"></p>
+    <p id="archivo_nombre" style="font-size: 0.9rem; color: #666; margin-top: -0.5rem;"></p>
 
-  
     <button type="submit">Enviar Entrega</button>
   </form>
 
@@ -120,24 +119,24 @@
         alert("No se pudo acceder a la cámara: " + err);
       });
     }
+
+    const archivoInput = document.getElementById("imagen");
+    const galeriaInput = document.getElementById("imagen_galeria");
+    const detalle = document.getElementById("archivo_nombre");
+
+    archivoInput.addEventListener("change", () => {
+      if (archivoInput.files.length > 0) {
+        detalle.innerText = "Imagen seleccionada: " + archivoInput.files[0].name;
+        galeriaInput.value = "";
+      }
+    });
+
+    galeriaInput.addEventListener("change", () => {
+      if (galeriaInput.files.length > 0) {
+        detalle.innerText = "Imagen seleccionada: " + galeriaInput.files[0].name;
+        archivoInput.value = "";
+      }
+    });
   </script>
 </body>
 </html>
-
-<script>
-  const archivoInput = document.getElementById("imagen");
-  const galeriaInput = document.getElementById("imagen_galeria");
-  const detalle = document.getElementById("archivo_nombre");
-
-  archivoInput.addEventListener("change", () => {
-    if (archivoInput.files.length > 0) {
-      detalle.innerText = "Imagen seleccionada: " + archivoInput.files[0].name;
-    }
-  });
-
-  galeriaInput.addEventListener("change", () => {
-    if (galeriaInput.files.length > 0) {
-      detalle.innerText = "Imagen seleccionada: " + galeriaInput.files[0].name;
-    }
-  });
-</script>
