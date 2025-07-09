@@ -1,17 +1,22 @@
-
 from flask import Flask, request, render_template, redirect, url_for, flash, jsonify
 import mysql.connector
 import smtplib
 from email.message import EmailMessage
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import os
 from dotenv import load_dotenv
 from PIL import Image
-from datetime import datetime, timedelta, timezone
-chile_tz = timezone(timedelta(hours=-4))  # Para horario de invierno Chile continental
+from werkzeug.utils import secure_filename
+import logging
+
+# Configurar logging
+logging.basicConfig(filename='entregas.log', level=logging.INFO)
+
+chile_tz = timezone(timedelta(hours=-4))
 load_dotenv()
 
 UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -31,6 +36,9 @@ SMTP_CONFIG = {
     "user": os.getenv("SMTP_USER"),
     "password": os.getenv("SMTP_PASSWORD")
 }
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def obtener_datos_pedido(pedido_id):
     conn = mysql.connector.connect(**DB_CONFIG)
@@ -78,8 +86,8 @@ def index():
 
         file = request.files.get("imagen") or request.files.get("imagen_galeria")
         if not file or file.filename == "":
-        flash("Debe adjuntar una imagen de la entrega.", "error")
-        return redirect(request.url)
+            flash("Debe adjuntar una imagen de la entrega.", "error")
+            return redirect(request.url)
 
         if not pedido_id or not entregado_por:
             flash("Todos los campos son obligatorios.", "error")
@@ -90,33 +98,35 @@ def index():
             flash(f"❌ El pedido #{pedido_id} no existe en la base de datos.", "error")
             return redirect(request.url)
 
+        if not allowed_file(file.filename):
+            flash("Solo se permiten imágenes en formato JPG, JPEG o PNG.", "error")
+            return redirect(request.url)
+
         momento_foto = datetime.now(chile_tz)
         fecha_entrega = momento_foto.strftime('%d/%m/%Y %H:%M:%S')
 
-        filename = f"entrega_{pedido_id}_{momento_foto.strftime('%Y%m%d%H%M%S')}.jpg"
+        filename = secure_filename(f"entrega_{pedido_id}_{momento_foto.strftime('%Y%m%d%H%M%S')}.jpg")
         image_path = os.path.join(app.config["UPLOAD_FOLDER"], filename)
         os.makedirs(os.path.dirname(image_path), exist_ok=True)
         file.save(image_path)
 
         try:
             img = Image.open(image_path)
+            img = img.convert('RGB')
             img.thumbnail((1024, 1024))
             img.save(image_path, format='JPEG', quality=50, dpi=(72, 72), optimize=True)
-
         except Exception as e:
-            flash(f"⚠️ No se pudo comprimir la imagen: {e}", "error")
+            flash(f"⚠️ No se pudo procesar la imagen: {e}", "error")
             return redirect(request.url)
 
         correo = pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
-            f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {momento_foto}.\n\n"
-            f"Adjuntamos una imagen como respaldo de la entrega.\n\n"
+            f"Tu pedido número {pedido_id} ha sido entregado con éxito el día {momento_foto}.\n\n"
+            f"Adjuntamos una imagen como respaldo.\n\n"
             f"Gracias por preferirnos.\n\n"
-            f"Un saludo afectuoso,\n"
-            f"Equipo de Repartos\n"
-            f"PrinterExpress Spa"
+            f"Equipo de Repartos\nPrinterExpress Spa"
         )
 
         try:
@@ -124,8 +134,9 @@ def index():
             registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 1, "")
             flash("✅ Correo enviado y entrega registrada correctamente.", "success")
         except Exception as e:
-            registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 0, str(e))
-            flash(f"⚠️ Error al enviar el correo, pero entrega registrada. Detalle: {e}", "error")
+            error_mensaje = f"{type(e).__name__}: {str(e)}"
+            registrar_entrega(pedido_id, fecha_entrega, image_path, entregado_por, comentario, 0, error_mensaje)
+            flash(f"⚠️ Error al enviar el correo, pero entrega registrada. Detalle: {error_mensaje}", "error")
 
         return redirect(url_for("index"))
 
