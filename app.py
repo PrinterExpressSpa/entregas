@@ -117,8 +117,8 @@ def index():
             f"Queremos contarte que tu pedido número {pedido_id} ha sido entregado con éxito el día {momento_foto}.\n\n"
             f"Adjuntamos una imagen como respaldo de la entrega.\n\n"
             f"Gracias por preferirnos.\n\n"
-            f"Dejanos tu comentario de nuestro servicio en Google Mi Negocio\n\n"
-            f"Link : https://g.page/r/Ce8P1szPvvrOEAE/review (1 minuto)\n\n"
+            f"Si te tomas 1 minuto para dejarnos tu reseña en Google, nos ayudarás muchísimo..\n"
+            f"Link : https://g.page/r/Ce8P1szPvvrOEAE/review 👈🏼\n\n"
             f"Un saludo afectuoso,\n"
             f"Equipo de Repartos\n"
             f"PrinterExpress Spa"
@@ -167,4 +167,5 @@ def too_large(e):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
 
