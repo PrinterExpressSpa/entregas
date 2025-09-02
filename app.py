@@ -79,8 +79,8 @@ def index():
         file = request.files.get("imagen") if request.files.get("imagen") else request.files.get("imagen_galeria")
 
         if not file or file.filename == "":
-        flash("Debe adjuntar una imagen de la entrega.", "error")
-        return redirect(request.url)
+            flash("Debe adjuntar una imagen de la entrega.", "error")
+            return redirect(request.url)
 
         if not pedido_id or not entregado_por:
             flash("Todos los campos son obligatorios.", "error")
