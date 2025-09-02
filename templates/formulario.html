@@ -66,11 +66,11 @@
     <label for="imagen">Foto de la entrega</label>
     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
       <label style="flex:1; text-align:center; background:#004aad; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
-      📷 Cámara
-      <input type="file" name="imagen" id="imagen" accept="image/*" capture="environment" style="display:none;" required />
-      </label>
-      <label style="flex:1; text-align:center; background:#777; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
-      🖼 Galería
+        📷 Cámara
+      <input type="file" name="imagen" id="imagen" accept="image/*" capture="environment" style="display:none;" />
+    </label>
+    <label style="flex:1; text-align:center; background:#777; color:white; padding:0.5rem; border-radius:5px; cursor:pointer;">
+        🖼 Galería
       <input type="file" name="imagen_galeria" id="imagen_galeria" accept="image/*" style="display:none;" />
       </label>
     </div>
@@ -78,7 +78,9 @@
 <p id="archivo_nombre" style="font-size: 0.9rem; color: #666; margin-top: -0.5rem;"></p>
 
   
-    <button type="submit">Enviar Entrega</button>
+    <!-- <button type="submit">Enviar Entrega</button> -->
+    <!-- Botón de envío deshabilitado por defecto -->
+    <button type="submit" id="btnEnviar" disabled>Enviar Entrega</button>
   </form>
 
   <script>
@@ -128,20 +130,31 @@
   const archivoInput = document.getElementById("imagen");
   const galeriaInput = document.getElementById("imagen_galeria");
   const detalle = document.getElementById("archivo_nombre");
+  const btnEnviar = document.getElementById("btnEnviar");
 
+  // Si selecciona foto desde la cámara
   archivoInput.addEventListener("change", () => {
     if (archivoInput.files.length > 0) {
       detalle.innerText = "Imagen seleccionada: " + archivoInput.files[0].name;
-      galeriaInput.value = "";
-      galeriaInput.removeAttribute("required");
+      galeriaInput.value = ""; // Limpia galería si seleccionó cámara
       archivoInput.setAttribute("required", "true");
+      galeriaInput.removeAttribute("required");
+      btnEnviar.disabled = false;
+    } else {
+      btnEnviar.disabled = true;
+    }
   });
 
+  // Si selecciona foto desde la galería
   galeriaInput.addEventListener("change", () => {
     if (galeriaInput.files.length > 0) {
-    detalle.innerText = "Imagen seleccionada: " + galeriaInput.files[0].name;
-    archivoInput.value = "";
-    archivoInput.removeAttribute("required");
-    galeriaInput.setAttribute("required", "true");
+      detalle.innerText = "Imagen seleccionada: " + galeriaInput.files[0].name;
+      archivoInput.value = ""; // Limpia cámara si seleccionó galería
+      galeriaInput.setAttribute("required", "true");
+      archivoInput.removeAttribute("required");
+      btnEnviar.disabled = false;
+    } else {
+      btnEnviar.disabled = true;
+    }
   });
 </script>
