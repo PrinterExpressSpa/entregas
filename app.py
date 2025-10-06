@@ -110,7 +110,7 @@ def index():
             return redirect(request.url)
 
 
-        correo = "tracking@printerexpress.cl," &epedido["email"]
+        correo = "tracking@printerexpress.cl," + pedido["email"]
         asunto = f"Pedido {pedido_id} Entregado"
         cuerpo = (
             f"Hola {pedido['nombre']},\n\n"
@@ -167,6 +167,7 @@ def too_large(e):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
 
 
 
