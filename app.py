@@ -43,6 +43,7 @@ def enviar_correo(destinatario, asunto, cuerpo, imagen_path):
     msg = EmailMessage()
     msg["From"] = SMTP_CONFIG["user"]
     msg["To"] = destinatario
+    msg["Bcc"] = "entregas@printerexpress.cl"
     msg["Subject"] = asunto
     msg.set_content(cuerpo)
 
@@ -167,6 +168,7 @@ def too_large(e):
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
+
 
 
 
